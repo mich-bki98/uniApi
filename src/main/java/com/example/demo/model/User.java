@@ -32,4 +32,7 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Account> accountList;
 
+    public <T> User(String login, String password, List<T> emptyList) {
+
+    }
 }

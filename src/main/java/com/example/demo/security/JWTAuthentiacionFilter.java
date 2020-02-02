@@ -1,5 +1,7 @@
 package com.example.demo.security;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.example.demo.model.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
@@ -15,6 +17,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
+
+import static com.example.demo.security.SecurityConstants.*;
 
 public class JWTAuthentiacionFilter extends UsernamePasswordAuthenticationFilter {
     //tutorial from https://auth0.com/blog/implementing-jwt-authentication-on-spring-boot/
@@ -45,7 +50,12 @@ public class JWTAuthentiacionFilter extends UsernamePasswordAuthenticationFilter
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        String token =
+        String token = JWT.create()
+                .withSubject(((User) authResult.getPrincipal()).getLogin())
+                .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .sign(Algorithm.HMAC512(SECRET.getBytes()));
+        response.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
+
 
     }
 }
