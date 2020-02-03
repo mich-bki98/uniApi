@@ -2,6 +2,7 @@ package com.example.demo.model;
 
 
 import lombok.*;
+import org.springframework.context.annotation.Role;
 
 import javax.persistence.*;
 import java.util.List;
@@ -31,8 +32,7 @@ public class User {
     private String password;
     @OneToMany(mappedBy = "user")
     private List<Account> accountList;
+    @Column
+    private String role;
 
-    public <T> User(String login, String password, List<T> emptyList) {
-
-    }
 }
