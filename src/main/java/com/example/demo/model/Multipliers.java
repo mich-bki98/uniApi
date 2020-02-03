@@ -1,6 +1,7 @@
 package com.example.demo.model;
 
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,7 +10,7 @@ import javax.persistence.*;
 
 @Getter
 @Setter
-
+@Builder
 @Entity
 @Table
 public class Multipliers {
