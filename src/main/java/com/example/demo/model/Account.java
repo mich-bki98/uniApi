@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID", nullable = false)
     private long id;
 
     @ManyToOne(fetch = FetchType.EAGER)

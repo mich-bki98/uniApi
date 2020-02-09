@@ -12,6 +12,8 @@ import lombok.AllArgsConstructor;
 import org.aspectj.weaver.bcel.BcelAccessForInlineMunger;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +39,7 @@ public class UserController {
         List<JSONObject> responses = new ArrayList<>();
         for (User user : userRepository.findAll()) {
             JSONObject response = new JSONObject();
+            response.put("id",user.getId());
             response.put("firstName", user.getFirstName());
             response.put("lastName", user.getLastName());
             response.put("login", user.getLogin());
@@ -46,10 +49,28 @@ public class UserController {
         return responses;
     }
 
+    @Secured("ROLE_ADMIN")
+    @GetMapping("/user/getUser")
+    public JSONObject getUser(@RequestBody JSONObject jsonObject) throws Exception {
+        JSONObject response = new JSONObject();
+        User user = userRepository.getOne((long)Integer.parseInt(jsonObject.get("userId").toString()));
+        if (user == null){
+            throw new Exception();
+        }
+        response.put("id",user.getId());
+        response.put("firstName", user.getFirstName());
+        response.put("lastName", user.getLastName());
+        response.put("login", user.getLogin());
+        response.put("password", user.getPassword());
+        return response;
+    }
+
     @Secured({"ROLE_USER","ROLE_ADMIN"})
     @PutMapping("/user")
-    public void updateUser(@RequestBody JSONObject jsonObject, @CurrentUserAtt UserPrincipal userPrincipal) {
+    public ResponseEntity updateUser(@RequestBody JSONObject jsonObject, @CurrentUserAtt UserPrincipal userPrincipal) {
         User user = userPrincipal.getUser();
+        if(!jsonObject.containsKey("field") || !jsonObject.containsKey("value"))
+            return new ResponseEntity("Bad request!!!", HttpStatus.BAD_REQUEST);
         String field = (String) jsonObject.get("field");
         String value = (String) jsonObject.get("value");
         switch (field) {
@@ -67,6 +88,7 @@ public class UserController {
                 break;
         }
         userRepository.saveAndFlush(user);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @Secured("ROLE_ADMIN")

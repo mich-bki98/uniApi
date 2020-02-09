@@ -180,7 +180,7 @@ public class TransactionController {
     }
 
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
-    @PutMapping
+    @PutMapping("/transaction")
     public ResponseEntity chooseTransaction(@RequestBody JSONObject jsonObject, @CurrentUserAtt UserPrincipal userPrincipal) {
         if (!jsonObject.containsKey("transactionType"))
             return new ResponseEntity(null, HttpStatus.BAD_REQUEST);
@@ -190,27 +190,22 @@ public class TransactionController {
             case "withdraw":
                 if (!jsonObject.containsKey("currency") || !jsonObject.containsKey("amount") || !jsonObject.containsKey("accountId"))
                     break;
-                withdrawTransaction(jsonObject, user);
-                break;
+                return withdrawTransaction(jsonObject, user);
             case "deposit":
                 if (!jsonObject.containsKey("currency") || !jsonObject.containsKey("amount") || !jsonObject.containsKey("accountId"))
                     break;
-                depositTransaction(jsonObject);
-                break;
+                return depositTransaction(jsonObject);
             case "sendCurrency":
                 if (!jsonObject.containsKey("currency") || !jsonObject.containsKey("amount")
                         || !jsonObject.containsKey("recieverLogin") || !jsonObject.containsKey("accountId"))
                     break;
-                sendTransaction(jsonObject, user);
-                break;
+                return sendTransaction(jsonObject, user);
             case "changeCurrency":
                 if (!jsonObject.containsKey("currencyFrom") || !jsonObject.containsKey("currencyTo")
                         || !jsonObject.containsKey("amount") || !jsonObject.containsKey("accountId"))
                     break;
-                changeCurrencyTransaction(jsonObject, user);
-                break;
+                return changeCurrencyTransaction(jsonObject, user);
         }
-
         return new ResponseEntity(null, HttpStatus.OK);
     }
 }

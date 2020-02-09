@@ -47,11 +47,11 @@ public class MultipliersController {
         multipliersRepository.saveAndFlush(multipliers);
     }
 
-    @Secured("ROLE_USER")
+    @Secured({"ROLE_USER","ROLE_ADMIN"})
     @GetMapping("/multipliers")
     public JSONObject getMultsTable() {
         JSONObject jsonObject = new JSONObject();
-        Multipliers multipliers = multipliersRepository.getOne((long) 0);
+        Multipliers multipliers = multipliersRepository.findMultipliersById((long)0);
         jsonObject.put("plnToEuro: ", multipliers.getPlnToEuro());
         jsonObject.put("euroToPln: ", multipliers.getEuroToPln());
         jsonObject.put("plnToPounds: ", multipliers.getPlnToPounds());

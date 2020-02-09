@@ -29,9 +29,9 @@ public class AccountController {
 
     @Secured("ROLE_ADMIN")
     @PostMapping("/account")
-    public void createAccount(@RequestBody JSONObject jsonObject) {
+    public void createAccount(@RequestBody JSONObject jsonObject) throws Exception {
         Account account = Account.builder()
-                .user(userRepository.getOne(Long.valueOf(jsonObject.get("userId").toString())))
+                .user(userRepository.findById(Long.valueOf(jsonObject.get("userId").toString())).orElseThrow(()->new Exception()))
                 .eur(new BigDecimal(0))
                 .pln(new BigDecimal(0))
                 .pounds(new BigDecimal(0))
@@ -39,7 +39,7 @@ public class AccountController {
         accountRepository.saveAndFlush(account);
     }
 
-    @Secured("ROLE_USER")
+    @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @GetMapping("/account/get")
     public List<JSONObject> getAccount(@CurrentUserAtt UserPrincipal userPrincipal) {
         User user = userPrincipal.getUser();
